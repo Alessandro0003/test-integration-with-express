@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "pretest": "docker-compose up -d app_database_test",
+    "pretest": "docker-compose up -d database_test",
     "test": "jest -i",
-    "posttest": "docker-compose stop app_database_test",
+    "posttest": "docker-compose down database_test",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
