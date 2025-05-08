@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "docker-compose up -d app_database_test",
+    "test": "jest -i",
+    "posttest": "docker-compose stop app_database_test",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
@@ -26,6 +28,7 @@
   "dependencies": {
     "@prisma/client": "^6.7.0",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pg": "^8.15.6"
   }
 }
