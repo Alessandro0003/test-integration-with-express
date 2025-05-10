@@ -70,4 +70,63 @@ describe('Give the taks resources', () => {
       expect(JSON.stringify(response.body)).toEqual(JSON.stringify(taskInDatabase))
     })
   })
+
+  describe('PUT /tasks/:id', () => {
+    it('should be able to update a task', async () => {
+      const tasks = await prisma.task.create({
+        data: {
+          userId: user.id,
+          title: 'Criar esteira de testes',
+          description: 'Terá que ser feito assim que for dado o push na branch master'
+        }
+      })
+
+      const response = await request(app).put(`/tasks/${tasks.id}`).send({
+        title: 'Criar esteira de testes de integração',
+        description: 'Terá que ser feito o deploy da ultima sprint'
+      })
+
+      const taskInDatabase = await prisma.task.findUnique({
+        where: {
+          id: tasks.id
+        }
+      })
+
+      expect(response.status).toBe(201)
+      expect(taskInDatabase).toBeTruthy()
+      expect(taskInDatabase?.title).toEqual('Criar esteira de testes de integração')
+    })
+  })
+
+  describe('DELETE /tasks/:id', () => {
+    it('should be able to delete a task', async () => {
+      const task = await prisma.task.create({
+        data: {
+          userId: user.id,
+          title: 'Alterar layout da page de login',
+          description: 'Terá que trocar todo o layout da page de login'
+        }
+      })
+
+      const response = await request(app).delete(`/tasks/${task.id}`).send()
+      const taskInDatabase = await prisma.task.findUnique({
+        where: {
+          id: task.id
+        }
+      })
+
+      expect(response.status).toBe(200)
+      expect(taskInDatabase).toBeNull()
+      expect(JSON.stringify(response.body)).toEqual(JSON.stringify(task))
+    })
+
+    it('should return 404 if task not found', async ()  => {
+      const nonExistentTaskId = 'non-existent-task-id'
+
+      const response = await request(app).delete(`/tasks/${nonExistentTaskId}`).send()
+
+      expect(response.status).toBe(404)
+      expect(response.body).toEqual({ message: 'Task not found' });
+    })
+  })
 })
