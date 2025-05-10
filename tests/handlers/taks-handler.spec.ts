@@ -20,7 +20,7 @@ describe('Give the taks resources', () => {
     await prisma.user.deleteMany()
   })
 
-  describe('Get /tasks', () => {
+  describe('Get  /tasks', () => {
     let tasks: Task[]
 
     beforeAll(async () => {
