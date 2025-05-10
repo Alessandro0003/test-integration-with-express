@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../config/prisma-client'
+import { Prisma } from '@prisma/client';
 
 const taskHandlers = Router()
 
@@ -38,5 +39,20 @@ taskHandlers.put('/tasks/:id', async (request, response) => {
 
   response.status(201).json(task)
 })
+
+taskHandlers.delete('/tasks/:id', async (request, response): Promise<any> => {
+  const { id } = request.params;
+
+  try {
+    const deletedTask = await prisma.task.delete({
+      where: { id },
+    });
+
+    return response.status(200).json(deletedTask);
+  } catch (error) {
+    
+    return response.status(404).json({ message: 'Task not found' });
+  }
+});
 
 export { taskHandlers }	
