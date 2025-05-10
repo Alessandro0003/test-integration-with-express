@@ -1,5 +1,6 @@
 import { Task, User } from "@prisma/client"
 import { prisma } from "../../src/config/prisma-client"
+import { randomUUID } from 'crypto';
 import request from 'supertest'
 import app from '../../src/app'
 
@@ -121,9 +122,9 @@ describe('Give the taks resources', () => {
     })
 
     it('should return 404 if task not found', async ()  => {
-      const nonExistentTaskId = 'non-existent-task-id'
+      const fakeId = randomUUID();
 
-      const response = await request(app).delete(`/tasks/${nonExistentTaskId}`).send()
+      const response = await request(app).delete(`/tasks/${fakeId}`).send()
 
       expect(response.status).toBe(404)
       expect(response.body).toEqual({ message: 'Task not found' });
