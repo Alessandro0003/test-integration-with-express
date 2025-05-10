@@ -5,7 +5,7 @@
   "scripts": {
     "pretest": "docker-compose up -d database_test",
     "test": "jest -i",
-    "posttest": "docker-compose down database_test",
+    "posttest": "docker-compose stop database_test",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
