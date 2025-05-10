@@ -1,0 +1,48 @@
+name: Run Integration Tests
+
+on: [push]
+
+jobs:
+  integration-tests:
+    name: Run Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12.3-alpine
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_db_test
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Aguardando banco estar disponível..."
+          until pg_isready -h localhost -p 5433 -U postgres; do
+            sleep 2
+          done
+
+      - name: Run Integration Tests
+        run: npm test
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/app_db_test
+          NODE_ENV: test
